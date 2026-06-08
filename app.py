@@ -8,9 +8,11 @@ CORS(app)
 
 API_KEY = os.getenv("NVIDIA_API_KEY")
 
+
 @app.route("/")
 def home():
     return "Backend is running"
+
 
 @app.route("/generate", methods=["POST"])
 def generate():
@@ -50,6 +52,14 @@ def generate():
         print("Status:", response.status_code)
         print("Text:", response.text)
 
+        # NVIDIA返回异常
+        if response.status_code != 200:
+            return jsonify({
+                "error": "NVIDIA API error",
+                "status": response.status_code,
+                "raw": response.text
+            }), 500
+
         try:
             result = response.json()
         except:
@@ -65,6 +75,8 @@ def generate():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-    if __name__ == "__main__":
+
+# ✅ 这个必须在最外层！（不能缩进）
+if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=port)
