@@ -40,6 +40,8 @@ def generate():
         }
 
         response = requests.post(url, headers=headers, json=payload)
+        print("Status:", response.status_code)
+        print("Text:", response.text)
 
         # 👉 如果直接失败
         if response.status_code != 200:
