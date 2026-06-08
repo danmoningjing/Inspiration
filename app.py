@@ -33,17 +33,31 @@ def generate():
             "Content-Type": "application/json"
         }
 
-        payload = {
-            "model": "meta/llama3-8b-instruct",
-            "messages": [
-                {
-                    "role": "user",
-                    "content": f"帮我写一段关于{text}的文案"
-                }
-            ],
-            "max_tokens": 200,
-            "stream": False
+    payload = {
+    "model": "meta/llama3-8b-instruct",
+    "messages": [
+        {
+            "role": "user",
+            "content": f"帮我写一段关于{text}的文案"
         }
+    ],
+    "max_tokens": 200,
+    "stream": False
+    }
+
+response = requests.post(url, headers=headers, json=payload)
+
+try:
+    result = response.json()
+except:
+    return jsonify({
+        "error": "NVIDIA返回非JSON",
+        "raw": response.text
+    }), 500
+
+return jsonify({
+    "result": result["choices"][0]["message"]["content"]
+})
 
         response = requests.post(url, headers=headers, json=payload)
 
