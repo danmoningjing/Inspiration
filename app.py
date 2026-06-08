@@ -6,6 +6,7 @@ import os
 app = Flask(__name__)
 CORS(app)
 
+# 👉 从 Render 环境变量读取
 API_KEY = os.getenv("NVIDIA_API_KEY")
 
 
@@ -21,11 +22,11 @@ def generate():
         if not API_KEY:
             return jsonify({"error": "Missing NVIDIA_API_KEY"}), 500
 
-        # ✅ 2. 解析请求 JSON
-        data = request.get_json(silent=True) or {}
+        # ✅ 2. 获取用户输入
+        data = request.get_json(force=True) or {}
         text = data.get("text", "")
 
-        # ✅ 3. NVIDIA API
+        # ✅ 3. NVIDIA API 配置
         url = "https://integrate.api.nvidia.com/v1/chat/completions"
 
         headers = {
@@ -33,35 +34,26 @@ def generate():
             "Content-Type": "application/json"
         }
 
-    payload = {
-    "model": "meta/llama3-8b-instruct",
-    "messages": [
-        {
-            "role": "user",
-            "content": f"帮我写一段关于{text}的文案"
+        payload = {
+            "model": "nvidia/nemotron-3-ultra-550b-a55b",  # ✅ 你用的模型
+            "messages": [
+                {
+                    "role": "user",
+                    "content": f"帮我写一段关于{text}的文案"
+                }
+            ],
+            "max_tokens": 200,
+            "stream": False
         }
-    ],
-    "max_tokens": 200,
-    "stream": False
-    }
 
-response = requests.post(url, headers=headers, json=payload)
-
-try:
-    result = response.json()
-except:
-    return jsonify({
-        "error": "NVIDIA返回非JSON",
-        "raw": response.text
-    }), 500
-
-return jsonify({
-    "result": result["choices"][0]["message"]["content"]
-})
-
+        # ✅ 4. 发请求
         response = requests.post(url, headers=headers, json=payload)
 
-        # ✅ 4. 关键：防炸 JSON
+        # 🔥 关键调试信息（去 Render Logs 看）
+        print("STATUS:", response.status_code)
+        print("RAW:", response.text)
+
+        # ✅ 5. 尝试解析 JSON
         try:
             result = response.json()
         except:
@@ -70,16 +62,27 @@ return jsonify({
                 "raw": response.text
             }), 500
 
-        # ✅ 5. 解析结果（再防一次）
+        # ✅ 6. 解析返回结构
         try:
             content = result["choices"][0]["message"]["content"]
         except:
             return jsonify({
-                "error": "返回格式异常",
+                "error": "返回结构异常",
                 "raw": result
             }), 500
 
-        return jsonify({"result": content})
+        # ✅ 7. 正常返回
+        return jsonify({
+            "result": content
+        })
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({
+            "error": str(e)
+        }), 500
+
+
+# ✅ Render 必须这样启动
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
