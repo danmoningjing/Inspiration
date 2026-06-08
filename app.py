@@ -21,8 +21,9 @@ def generate():
         data = request.get_json(force=True)
         text = data.get("text", "")
 
-        url = "https://integrate.api.nvidia.com/v1/chat/completions"
+        url = "https://api.nvidia.com/v1/chat/completions"
 
+        
         headers = {
             "Authorization": f"Bearer {API_KEY}",
             "Content-Type": "application/json"
