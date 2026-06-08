@@ -45,3 +45,6 @@ import os
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=port)
+
+if not API_KEY:
+    return jsonify({"error": "Missing API key"}), 500
