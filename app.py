@@ -18,50 +18,43 @@ def generate():
         return jsonify({"error": "Missing NVIDIA_API_KEY"}), 500
 
     try:
-        data = request.get_json(force=True)
+        data = request.json or {}
         text = data.get("text", "")
 
-        url = "https://api.nvidia.com/v1/chat/completions"
+        url = "https://integrate.api.nvidia.com/v1/chat/completions"
 
-        
         headers = {
             "Authorization": f"Bearer {API_KEY}",
             "Content-Type": "application/json"
         }
 
         payload = {
-            "model": "meta/llama3-8b-instruct",  # ✅ 稳定模型
+            "model": "meta/llama3-8b-instruct",
             "messages": [
                 {
                     "role": "user",
                     "content": f"帮我写一段关于{text}的文案"
                 }
             ],
-            "max_tokens": 200
+            "max_tokens": 200,
+            "stream": False
         }
 
-      response = requests.post(
-      url,
-      headers=headers,
-      json=payload,
-      timeout=15  # 🔥 防止卡死
-      )
+        response = requests.post(
+            url,
+            headers=headers,
+            json=payload,
+            timeout=15
+        )
 
-print("Status:", response.status_code)
-print("Text:", response.text)
-        # 👉 如果直接失败
-        if response.status_code != 200:
-            return jsonify({
-                "error": "NVIDIA API error",
-                "status": response.status_code,
-                "raw": response.text
-            }), 500
+        print("Status:", response.status_code)
+        print("Text:", response.text)
 
         try:
             result = response.json()
         except:
             return jsonify({
-                "error": "返回不是JSON",
+                "error": "NVIDIA返回非JSON",
                 "raw": response.text
             }), 500
 
@@ -72,7 +65,6 @@ print("Text:", response.text)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-
-if __name__ == "__main__":
+    if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=port)
