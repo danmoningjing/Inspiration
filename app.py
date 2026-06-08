@@ -30,6 +30,7 @@ def generate():
                 {"role": "user", "content": f"帮我写一段关于{text}的文案"}
             ],
             "max_tokens": 200
+            "stream": False
         }
 
         response = requests.post(url, headers=headers, json=payload)
