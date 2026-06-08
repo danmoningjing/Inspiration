@@ -40,10 +40,15 @@ def generate():
             "max_tokens": 200
         }
 
-        response = requests.post(url, headers=headers, json=payload)
-        print("Status:", response.status_code)
-        print("Text:", response.text)
+      response = requests.post(
+      url,
+      headers=headers,
+      json=payload,
+      timeout=15  # 🔥 防止卡死
+      )
 
+print("Status:", response.status_code)
+print("Text:", response.text)
         # 👉 如果直接失败
         if response.status_code != 200:
             return jsonify({
