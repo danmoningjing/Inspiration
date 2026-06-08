@@ -10,47 +10,44 @@ API_KEY = os.getenv("NVIDIA_API_KEY")
 
 @app.route("/generate", methods=["POST"])
 def generate():
-    data = request.json or {}
-    text = data.get("text", "")
+    if not API_KEY:
+        return jsonify({"error": "Missing API key"}), 500
 
-    url = "https://integrate.api.nvidia.com/v1/chat/completions"
+    try:
+        data = request.json or {}
+        text = data.get("text", "")
 
-    headers = {
-        "Authorization": f"Bearer {API_KEY}",
-        "Content-Type": "application/json"
-    }
+        url = "https://integrate.api.nvidia.com/v1/chat/completions"
 
-    payload = {
-        "model": "meta/llama3-8b-instruct",
-        "messages": [
-            {"role": "user", "content": f"帮我写一段关于{text}的文案"}
-        ],
-        "max_tokens": 200
-    }
+        headers = {
+            "Authorization": f"Bearer {API_KEY}",
+            "Content-Type": "application/json"
+        }
 
-    response = requests.post(url, headers=headers, json=payload)
+        payload = {
+            "model": "meta/llama3-8b-instruct",
+            "messages": [
+                {"role": "user", "content": f"帮我写一段关于{text}的文案"}
+            ],
+            "max_tokens": 200
+        }
 
-    result = response.json()
+        response = requests.post(url, headers=headers, json=payload)
+        result = response.json()
 
-    return jsonify({
-        "result": result["choices"][0]["message"]["content"]
-    })
+        return jsonify({
+            "result": result["choices"][0]["message"]["content"]
+        })
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 @app.route("/")
 def home():
     return "NVIDIA backend running!"
 
-import os
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=port)
-
-@app.route("/generate", methods=["POST"])
-def generate():
-    if not API_KEY:
-        return jsonify({"error": "Missing API key"}), 500
-
-    try:
-        data = request.json
-        text = data.get("text")
