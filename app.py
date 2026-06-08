@@ -31,7 +31,7 @@ def generate():
         }
 
         payload = {
-            "model": "meta/llama3-8b-instruct",
+            "model": "meta/llama3.1-8b-instruct",
             "messages": [
                 {
                     "role": "user",
