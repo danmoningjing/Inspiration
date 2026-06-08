@@ -11,7 +11,7 @@ API_KEY = os.getenv("NVIDIA_API_KEY")
 @app.route("/generate", methods=["POST"])
 def generate():
     if not API_KEY:
-        return jsonify({"error": "Missing API key"}), 500
+    raise Exception("Missing NVIDIA_API_KEY")
 
     try:
         data = request.json or {}
