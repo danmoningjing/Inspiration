@@ -10,8 +10,8 @@ API_KEY = os.getenv("NVIDIA_API_KEY")
 
 @app.route("/generate", methods=["POST"])
 def generate():
-    data = request.json
-    text = data.get("text")
+    data = request.json or {}
+    text = data.get("text", "")
 
     url = "https://integrate.api.nvidia.com/v1/chat/completions"
 
@@ -46,5 +46,11 @@ if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=port)
 
-if not API_KEY:
-    return jsonify({"error": "Missing API key"}), 500
+@app.route("/generate", methods=["POST"])
+def generate():
+    if not API_KEY:
+        return jsonify({"error": "Missing API key"}), 500
+
+    try:
+        data = request.json
+        text = data.get("text")
