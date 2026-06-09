@@ -6,7 +6,7 @@ import os
 app = Flask(__name__)
 CORS(app)
 
-API_KEY = os.getenv("NVIDIA_API_KEY")
+API_KEY = os.getenv("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")
 
 
 @app.route("/")
@@ -25,13 +25,14 @@ def generate():
 
         url = "https://integrate.api.nvidia.com/v1/chat/completions"
 
-    headers = {
+headers = {
     "Authorization": f"Bearer {API_KEY}",
     "Content-Type": "application/json",
     "Accept": "application/json"
 }
-    payload = {
-    "model": "meta/llama3-8b-instruct",
+
+payload = {
+    "model": "meta/llama-3.1-8b-instruct",
     "messages": [
         {
             "role": "user",
@@ -39,10 +40,8 @@ def generate():
         }
     ],
     "max_tokens": 200,
-    "temperature": 0.7,
-    "top_p": 0.9
+    "temperature": 0.7
 }
-
         response = requests.post(
     url,
     headers=headers,
