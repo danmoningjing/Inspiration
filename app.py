@@ -51,6 +51,7 @@ def generate():
 
         print("Status:", response.status_code)
         print("Text:", response.text)
+        print("URL:", url)
 
         # NVIDIA返回异常
         if response.status_code != 200:
