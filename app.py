@@ -26,23 +26,21 @@ def generate():
         url = "https://integrate.api.nvidia.com/v1/chat/completions"
 
     headers = {
-        
-        "Authorization": f"Bearer {API_KEY}",
-        "Content-Type": "application/json",
-        "Accept": "application/json"
+    "Authorization": f"Bearer {API_KEY}",
+    "Content-Type": "application/json",
+    "Accept": "application/json"
 }
-
     payload = {
-        
-       "model": "meta/llama-3.1-8b-instruct",
-       "messages": [
-          {
+    "model": "meta/llama3-8b-instruct",
+    "messages": [
+        {
             "role": "user",
             "content": f"帮我写一段关于{text}的文案"
-          }
-        ],
+        }
+    ],
     "max_tokens": 200,
-    "temperature": 0.7
+    "temperature": 0.7,
+    "top_p": 0.9
 }
 
         response = requests.post(
