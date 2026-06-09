@@ -25,34 +25,35 @@ def generate():
 
         url = "https://integrate.api.nvidia.com/v1/chat/completions"
 
-        headers = {
-            "Authorization": f"Bearer {API_KEY}",
-            "Content-Type": "application/json"
-        }
+    headers = {
+        
+        "Authorization": f"Bearer {API_KEY}",
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+}
 
-        payload = {
-            "model": "meta/llama3.1-8b-instruct",
-            "messages": [
-                {
-                    "role": "user",
-                    "content": f"帮我写一段关于{text}的文案"
-                }
-            ],
-            "max_tokens": 200,
-            "stream": False
-        }
+    payload = {
+        
+       "model": "meta/llama-3.1-8b-instruct",
+       "messages": [
+          {
+            "role": "user",
+            "content": f"帮我写一段关于{text}的文案"
+          }
+        ],
+    "max_tokens": 200,
+    "temperature": 0.7
+}
 
         response = requests.post(
-            url,
-            headers=headers,
-            json=payload,
-            timeout=15
-        )
+    url,
+    headers=headers,
+    json=payload,
+    timeout=15
+)
 
-        print("Status:", response.status_code)
-        print("Text:", response.text)
-        print("URL:", url)
-
+print("Status:", response.status_code)
+print("Text:", response.text)
         # NVIDIA返回异常
         if response.status_code != 200:
             return jsonify({
