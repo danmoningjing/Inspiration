@@ -1,61 +1,106 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-    <meta charset="UTF-8">
-    <title>文案生成器</title>
-    <style>
-        body {
-            font-family: Arial;
-            max-width: 600px;
-            margin: 50px auto;
-            text-align: center;
-        }
-        input {
-            width: 80%;
-            padding: 10px;
-            font-size: 16px;
-        }
-        button {
-            padding: 10px 20px;
-            margin-top: 10px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        #result {
-            margin-top: 20px;
-            text-align: left;
-            white-space: pre-wrap;
-        }
-        .fade-in {
+<meta charset="UTF-8">
+<title>灵感生成器</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: "Helvetica Neue", sans-serif;
+    height: 100vh;
+    background: url('https://images.unsplash.com/photo-1501785888041-af3ef285b470') no-repeat center center/cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 玻璃卡片 */
+.container {
+    backdrop-filter: blur(15px);
+    background: rgba(255, 255, 255, 0.15);
+    padding: 40px;
+    border-radius: 20px;
+    width: 400px;
+    color: white;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+/* 标题 */
+h1 {
+    margin-bottom: 20px;
+}
+
+/* 输入框 */
+input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    outline: none;
+    margin-bottom: 15px;
+}
+
+/* 按钮 */
+button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.3);
+    color: white;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    background: rgba(255,255,255,0.5);
+}
+
+/* loading */
+#loading {
+    margin-top: 10px;
+}
+
+/* 结果 */
+#result {
+    margin-top: 20px;
+    text-align: left;
+    white-space: pre-wrap;
     opacity: 0;
     transition: opacity 0.8s ease-in;
 }
 
-.fade-in.show {
+#result.show {
     opacity: 1;
 }
-    </style>
+</style>
+
 </head>
+
 <body>
 
-    <h1>AI 文案生成器</h1>
+<div class="container">
+    <h1>🌄 灵感生成器</h1>
 
-    <input id="inputText" placeholder="输入关键词，比如：咖啡" />
-    <br>
-    <button id="btn" onclick="generate()">生成</button>
-<p id="loading" style="display:none;">✨ 正在生成灵感...</p>
+    <input id="inputText" placeholder="输入关键词，比如：咖啡 / 旅行 / 山川" />
 
-    <div id="result" class="fade-in"></div>
+    <button id="btn" onclick="generate()">生成灵感</button>
 
-    <script>
+    <p id="loading" style="display:none;">✨ 正在生成灵感...</p>
+
+    <div id="result"></div>
+</div>
+
+<script>
 async function generate() {
     const text = document.getElementById("inputText").value;
     const resultDiv = document.getElementById("result");
     const loading = document.getElementById("loading");
     const btn = document.getElementById("btn");
 
-    // 👉 显示 loading
     loading.style.display = "block";
+    resultDiv.classList.remove("show");
     resultDiv.innerText = "";
     btn.disabled = true;
 
@@ -70,24 +115,21 @@ async function generate() {
 
         const data = await res.json();
 
-       const text = data.result || data.error;
+        resultDiv.innerText = data.result || data.error;
 
-resultDiv.classList.remove("show"); // 先隐藏
-resultDiv.innerText = text;
+        // 触发淡入
+        void resultDiv.offsetWidth;
+        resultDiv.classList.add("show");
 
-// 强制浏览器刷新（关键！）
-void resultDiv.offsetWidth;
-
-resultDiv.classList.add("fade-in");
-resultDiv.classList.add("show");
     } catch (err) {
         resultDiv.innerText = "请求失败，请重试";
+        resultDiv.classList.add("show");
     }
 
-    // 👉 结束 loading
     loading.style.display = "none";
     btn.disabled = false;
 }
 </script>
+
 </body>
 </html>
