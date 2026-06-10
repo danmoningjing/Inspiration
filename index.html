@@ -26,6 +26,14 @@
             text-align: left;
             white-space: pre-wrap;
         }
+        .fade-in {
+    opacity: 0;
+    transition: opacity 0.8s ease-in;
+}
+
+.fade-in.show {
+    opacity: 1;
+}
     </style>
 </head>
 <body>
@@ -37,7 +45,7 @@
     <button id="btn" onclick="generate()">生成</button>
 <p id="loading" style="display:none;">✨ 正在生成灵感...</p>
 
-    <div id="result"></div>
+    <div id="result" class="fade-in"></div>
 
     <script>
 async function generate() {
@@ -62,7 +70,16 @@ async function generate() {
 
         const data = await res.json();
 
-        resultDiv.innerText = data.result || data.error;
+       const text = data.result || data.error;
+
+resultDiv.classList.remove("show"); // 先隐藏
+resultDiv.innerText = text;
+
+// 强制浏览器刷新（关键！）
+void resultDiv.offsetWidth;
+
+resultDiv.classList.add("fade-in");
+resultDiv.classList.add("show");
     } catch (err) {
         resultDiv.innerText = "请求失败，请重试";
     }
