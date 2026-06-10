@@ -40,22 +40,37 @@
     <div id="result"></div>
 
     <script>
-        async function generate() {
-            const text = document.getElementById("inputText").value;
+async function generate() {
+    const text = document.getElementById("inputText").value;
+    const resultDiv = document.getElementById("result");
+    const loading = document.getElementById("loading");
+    const btn = document.getElementById("btn");
 
-            const res = await fetch("/generate", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ text })
-            });
+    // 👉 显示 loading
+    loading.style.display = "block";
+    resultDiv.innerText = "";
+    btn.disabled = true;
 
-            const data = await res.json();
+    try {
+        const res = await fetch("/generate", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ text })
+        });
 
-            document.getElementById("result").innerText = data.result || data.error;
-        }
-    </script>
+        const data = await res.json();
 
+        resultDiv.innerText = data.result || data.error;
+    } catch (err) {
+        resultDiv.innerText = "请求失败，请重试";
+    }
+
+    // 👉 结束 loading
+    loading.style.display = "none";
+    btn.disabled = false;
+}
+</script>
 </body>
 </html>
