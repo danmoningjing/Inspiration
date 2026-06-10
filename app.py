@@ -10,7 +10,7 @@ API_KEY = os.getenv("NVIDIA_API_KEY")
 
 @app.route("/")
 def home():
-    return "Backend is running"
+    return send_file("index.html")
 
 @app.route("/generate", methods=["POST"])
 def generate():
@@ -72,6 +72,7 @@ def generate():
             "error": str(e)
         }), 500
 
+from flask import send_file
 
 # 🚀 一定要在最外层（不是在函数里面！！）
 if __name__ == "__main__":
